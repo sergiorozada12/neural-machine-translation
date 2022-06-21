@@ -3,12 +3,20 @@ import sys
 import pandas as pd
 
 from src.model import Translator
+from src.utils import save_dataset
+from src.config import REGEX, NAME
+
+PATH_INPUT = sys.argv[1]
+PATH_OUTPUT = sys.argv[2]
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(sys.argv[1], sep=';')
+    df = pd.read_csv(PATH_INPUT, sep=';')
 
-    text = df['text'].values()
+    texts = df['text'].values()
     labels = df['label'].values()
 
-    print(df)
+    translator = Translator(NAME, REGEX)
+    texts_trans, times = translator.translate_dataset(texts)
+
+    save_dataset(PATH_OUTPUT, texts, texts_trans, labels, times)
