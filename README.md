@@ -1,2 +1,7 @@
-# neural-machine-translation
-Playing around with MarianMT
+# Neural Machine Translation (NMT)
+
+This repo uses a HuggingFace model to translate a CSV. To run the translator use the following command:
+
+```
+python main.py data/dataset.ca.csv data/dataset.es.csv
+```
