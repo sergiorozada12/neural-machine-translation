@@ -3,7 +3,10 @@ import datetime
 from tqdm import tqdm
 from typing import List, Tuple
 
+import numpy as np
 from transformers import MarianMTModel, MarianTokenizer
+
+from src.config import BATCH_SIZE
 
 
 class Translator():
@@ -18,9 +21,19 @@ class Translator():
 
     def _translate(self, text: str) -> str:
         sentences = self._prepare_text(text)
-        batches = self.tokenizer.prepare_seq2seq_batch(sentences, return_tensors="pt")
-        batches_translated = self.model.generate( **batches)
-        sentences_translated = [self.tokenizer.decode(s, skip_special_tokens=True) for s in batches_translated]
+        data = self.tokenizer.prepare_seq2seq_batch(sentences, return_tensors="pt")
+
+        tokens = data['input_ids']
+        atts = data['attention_mask']
+
+        sentences_translated = list()
+        for i in range(0, tokens.shape[0], BATCH_SIZE):
+            batch_tokens = tokens[i : i + BATCH_SIZE, :]
+            batch_atts = atts[i : i + BATCH_SIZE, :]
+
+            batch_translated = self.model.generate(input_ids=batch_tokens, attention_mask=batch_atts)
+            sentences_translated += [self.tokenizer.decode(s, skip_special_tokens=True) for s in batch_translated]
+
         return " ".join(sentences_translated)
 
     def translate_dataset(self, texts: List[str]) -> Tuple[List[str], List[float]]:
