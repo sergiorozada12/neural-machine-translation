@@ -13,8 +13,8 @@ PATH_OUTPUT = sys.argv[2]
 if __name__ == "__main__":
     df = pd.read_csv(PATH_INPUT, sep=';')
 
-    texts = df['text'].values()
-    labels = df['label'].values()
+    texts = df['text'].values
+    labels = df['label'].values
 
     translator = Translator(NAME, REGEX)
     texts_trans, times = translator.translate_dataset(texts)

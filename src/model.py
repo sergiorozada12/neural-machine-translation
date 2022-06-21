@@ -1,5 +1,6 @@
 import re
 import datetime
+from tqdm import tqdm
 from typing import List, Tuple
 
 from transformers import MarianMTModel, MarianTokenizer
@@ -22,9 +23,9 @@ class Translator():
         sentences_translated = [self.tokenizer.decode(s, skip_special_tokens=True) for s in batches_translated]
         return " ".join(sentences_translated)
 
-    def translate_dataset(self, texts: List[str]) -> Tuple(List[str], List[float]):
+    def translate_dataset(self, texts: List[str]) -> Tuple[List[str], List[float]]:
         texts_trans, times = [], []
-        for text in texts:
+        for text in tqdm(texts):
             start_time = datetime.datetime.now()
             text_trans = self._translate(text)
             end_time = datetime.datetime.now()
