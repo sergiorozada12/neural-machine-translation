@@ -3,7 +3,7 @@ NAME = 'Helsinki-NLP/opus-mt-ca-es'
 BATCH_SIZE = 32
 
 # Alternative backend fbgemm
-QUANTIZATION_BACKEND = 'qnnpack'
+QUANTIZATION_BACKEND = 'fbgemm'
 
 MODEL_CONFIG = {
     'default': False,
@@ -11,7 +11,6 @@ MODEL_CONFIG = {
     'top_k': 50,
     'quantize': True,
     'early_stopping': True,
-    'batch_size': 32,
     'do_sample': False,
     'repetition_penalty': 2.0,
     'max_time': 4.0,
