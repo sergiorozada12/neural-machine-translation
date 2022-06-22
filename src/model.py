@@ -1,19 +1,46 @@
 import re
 import datetime
 from tqdm import tqdm
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Union
 
-import numpy as np
+import torch
 from transformers import MarianMTModel, MarianTokenizer
 
-from src.config import BATCH_SIZE
+from src.config import BATCH_SIZE, QUANTIZATION_BACKEND
+
+
+torch.backends.quantized.engine = QUANTIZATION_BACKEND
 
 
 class Translator():
-    def __init__(self, name: str, split_regex: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        split_regex: str,
+        config: Dict[str, Union[int, bool, float]]
+    ) -> None:
+
         self.split_regex = split_regex
         self.tokenizer = MarianTokenizer.from_pretrained(name)
-        self.model = MarianMTModel.from_pretrained(name)
+
+        self.config = config
+        model = MarianMTModel.from_pretrained(name)
+
+        model.config.num_beams = config['num_beams']
+        model.config.early_stopping = config['early_stopping']
+        model.config.top_k = config['top_k']
+        model.config.do_sample = config['do_sample']
+        model.config.repetition_penalty = config['repetition_penalty']
+        model.config.max_time = config['max_time']
+
+        if config['quantize']:
+            model = torch.quantization.quantize_dynamic(
+                model,
+                {torch.nn.Linear},
+                dtype=torch.qint8
+            )
+
+        self.model = model
 
     def _prepare_text(self, text: str) -> List[str]:
         text_filtered = text.replace('\n', ' ').strip()
