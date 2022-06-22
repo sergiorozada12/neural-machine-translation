@@ -6,7 +6,7 @@ BATCH_SIZE = 32
 QUANTIZATION_BACKEND = 'qnnpack'
 
 MODEL_CONFIG = {
-    'default': True,
+    'default': False,
     'num_beams': 1,
     'top_k': 50,
     'quantize': True,
