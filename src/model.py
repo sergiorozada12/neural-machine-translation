@@ -1,7 +1,7 @@
 import re
 import datetime
 from tqdm import tqdm
-from typing import List, Tuple, Dict, Union
+from typing import Tuple, Union, List, Dict
 
 import torch
 from transformers import MarianMTModel, MarianTokenizer
@@ -26,19 +26,20 @@ class Translator():
         self.config = config
         model = MarianMTModel.from_pretrained(name)
 
-        model.config.num_beams = config['num_beams']
-        model.config.early_stopping = config['early_stopping']
-        model.config.top_k = config['top_k']
-        model.config.do_sample = config['do_sample']
-        model.config.repetition_penalty = config['repetition_penalty']
-        model.config.max_time = config['max_time']
+        if not config['default']:
+            model.config.num_beams = config['num_beams']
+            model.config.early_stopping = config['early_stopping']
+            model.config.top_k = config['top_k']
+            model.config.do_sample = config['do_sample']
+            model.config.repetition_penalty = config['repetition_penalty']
+            model.config.max_time = config['max_time']
 
-        if config['quantize']:
-            model = torch.quantization.quantize_dynamic(
-                model,
-                {torch.nn.Linear},
-                dtype=torch.qint8
-            )
+            if config['quantize']:
+                model = torch.quantization.quantize_dynamic(
+                    model,
+                    {torch.nn.Linear},
+                    dtype=torch.qint8
+                )
 
         self.model = model
 

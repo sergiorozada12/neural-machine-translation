@@ -1,11 +1,12 @@
 REGEX = '(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s'
-NAME = 'Helsinki-NLP/opus-mt-es-ca'
+NAME = 'Helsinki-NLP/opus-mt-ca-es'
 BATCH_SIZE = 32
 
 # Alternative backend fbgemm
 QUANTIZATION_BACKEND = 'qnnpack'
 
 MODEL_CONFIG = {
+    'default': True,
     'num_beams': 1,
     'top_k': 50,
     'quantize': True,
