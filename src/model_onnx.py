@@ -79,16 +79,14 @@ class TranslationDecoderOnnx:
 
 
 class TranslationModelOnnx:
-    def __init__(self, marian_config: PretrainedConfig, onnx_config: Dict):
+    def __init__(self, marian_config: PretrainedConfig, onnx_config: Dict) -> None:
 
         self.encoder = TranslationEncoderOnnx(onnx_config)
         self.decoder = TranslationDecoderOnnx(onnx_config)
         self.config = marian_config
         self.max_length: int = onnx_config['max_length']
 
-    def generate(self, tokens: Dict):
-        enc_inputs = tokens['input_ids']
-        enc_att_mask = tokens['attention_mask']
+    def generate(self, enc_inputs: np.ndarray, enc_att_mask: np.ndarray) -> np.ndarray:
         hidden = self.encoder(enc_inputs, enc_att_mask)
 
         bsz = enc_inputs.shape[0]
@@ -139,7 +137,7 @@ class Translator():
 
     def _translate(self, text: str) -> str:
         sentences = self._prepare_text(text)
-        data = self.tokenizer.prepare_seq2seq_batch(sentences, return_tensors="pt")
+        data = self.tokenizer.prepare_seq2seq_batch(sentences, return_tensors="np")
 
         tokens = data['input_ids']
         atts = data['attention_mask']
@@ -149,12 +147,7 @@ class Translator():
             batch_tokens = tokens[i : i + BATCH_SIZE, :]
             batch_atts = atts[i : i + BATCH_SIZE, :]
 
-            tokens = {
-                'input_ids': batch_tokens,
-                'attention_mask': batch_atts
-            }
-
-            batch_translated = self.model.generate(tokens)
+            batch_translated = self.model.generate(batch_tokens, batch_atts)
             sentences_translated += [self.tokenizer.decode(s, skip_special_tokens=True) for s in batch_translated]
 
         return " ".join(sentences_translated)
