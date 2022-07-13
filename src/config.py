@@ -2,8 +2,8 @@ REGEX = '(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s'
 NAME = 'Helsinki-NLP/opus-mt-ca-es'
 BATCH_SIZE = 32
 
-# Alternative backend fbgemm
-QUANTIZATION_BACKEND = 'fbgemm'
+# Alternatives backends: fbgemm / qnnpack
+QUANTIZATION_BACKEND = 'qnnpack'
 
 MODEL_CONFIG_HUGGINGFACE = {
     'default': False,
